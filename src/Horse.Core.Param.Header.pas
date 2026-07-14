@@ -3,7 +3,16 @@ unit Horse.Core.Param.Header;
 {$IF DEFINED(FPC)}
 {$MODE DELPHI}{$H+}
 {$MACRO ON}
+// FPC's Generics.Defaults IEqualityComparer<T> changed its parameter passing
+// convention across releases: 3.2.2 (and earlier) declares Equals/GetHashCode
+// with `constref`, while 3.2.3+ uses `const`. The implementation signature must
+// match the RTL exactly or FPC raises "No matching implementation for interface
+// method GetHashCode(const AnsiString)". Key CONST_GENERIC off the FPC version
+// (not the OS) so both the Linux build (FPC 3.2.2) and the macOS dev build
+// (FPC 3.2.3) compile.
 {$IF DEFINED(CPU64) AND DEFINED(WINDOWS)}
+  {$DEFINE CONST_GENERIC := const}
+{$ELSEIF FPC_FULLVERSION >= 30203}
   {$DEFINE CONST_GENERIC := const}
 {$ELSE}
   {$DEFINE CONST_GENERIC := constref}
